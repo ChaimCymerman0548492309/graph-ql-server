@@ -10,13 +10,38 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const products_model_1 = require("./products.model");
+const connections_db_1 = require("../../utils/connections.db");
+const queryString = `
+      SELECT
+        "admin_products"."product_id",
+        "admin_products"."is_for_sale",
+        "admin_products"."cost_price",
+        "admin_products"."supplier",
+        "product"."name" AS "name",
+        "product"."sale_price" AS "sale_price",
+        "product"."quantity" AS "quantity",
+        "product"."description" AS "description",
+        "product"."category" AS "category",
+        "product"."discount_percentage" AS "discount_percentage",
+        "product"."image_url" AS "image_url",
+        "product"."image_alt" AS "image_alt"
+      FROM
+        "admin_products" AS "admin_products"
+      LEFT OUTER JOIN
+        "products" AS "product"
+      ON
+        "admin_products"."product_id" = "product"."product_id";
+    `;
 const productService = {
     getAllInventory: () => __awaiter(void 0, void 0, void 0, function* () {
-        const inventory = yield products_model_1.AdminProduct.findAll({
-            include: [products_model_1.Product],
-            raw: true,
-        });
-        return inventory;
+        try {
+            const inventory = yield connections_db_1.sequelize.query(queryString);
+            return inventory[0];
+        }
+        catch (error) {
+            console.error('Error fetching inventory:', error);
+            throw error;
+        }
     }),
     getInventoryById: (productId) => __awaiter(void 0, void 0, void 0, function* () {
         const inventoryItem = yield products_model_1.AdminProduct.findOne({

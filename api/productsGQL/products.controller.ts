@@ -4,7 +4,7 @@ import productService from './products.service';
 
 export const getAllInventory = async () => {
     try {
-        const inventory = await productService.getAllInventory();        
+        const inventory = await productService.getAllInventory();                
         return {
             status: 200,
             products: inventory
