@@ -57,4 +57,16 @@ exports.productsResolvers = {
             }
         })
     },
+    Mutation: {
+        addProduct: (_, { product }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const result = yield productsController.addNewInventoryItem(product);
+                console.log(result);
+                return result;
+            }
+            catch (error) {
+                throw error;
+            }
+        })
+    }
 };

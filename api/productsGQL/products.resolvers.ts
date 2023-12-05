@@ -1,4 +1,5 @@
 import * as productsController from "../productsGQL/products.controller";
+import { InputNewProduct } from "./products.interface";
 
 export const productsResolvers = {
   Query: {
@@ -23,6 +24,17 @@ export const productsResolvers = {
 
     }
   },
+  Mutation : {
+    addProduct: async (_:any, {product}: {product:InputNewProduct}) => {
+      try {
+        const result = await productsController.addNewInventoryItem(product);
+        console.log(result);
+        return result
+      } catch (error) {
+        throw error;
+      }
+    }
+  }
 };
 
 

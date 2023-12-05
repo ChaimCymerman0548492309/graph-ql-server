@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import productService from './products.service';
+import { AdminProductInterface, InputNewProduct } from './products.interface';
 
 
 export const getAllInventory = async () => {
@@ -43,15 +44,22 @@ export const getInventoryById = async (productId: string) => {
     }
 };
 
-export const addNewInventoryItem = async (req: Request, res: Response): Promise<void> => {
-    const newInventoryItemData = req.body;
-
+export const addNewInventoryItem = async (newInventoryItemData: InputNewProduct) => {
+    
     try {
-        const createdInventoryItem = await productService.addNewInventoryItem(newInventoryItemData);
-        res.status(201).json(createdInventoryItem);
+        const createdInventoryItem = await productService.addNewInventoryItem(newInventoryItemData);        
+        return {
+            status: 201,
+            product: createdInventoryItem.product,
+            adminProduct: createdInventoryItem.adminProduct,
+            message: 'Successfully added!'
+        }
 
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Intrnal service error'
+        }
     }
 };
 
@@ -87,3 +95,20 @@ export const deleteInventoryItem = async (req: Request, res: Response): Promise<
     }
 };
 
+const exampleAdminProduct = {
+    product : {
+        name: 'Example Admin Product',
+        sale_price: 39.99,
+        quantity: 50,
+        description: 'This is an example admin product description.',
+        category: 'Office Supplies',
+        discount_percentage: 15,
+        image_url: 'https://example.com/admin-product-image.jpg',
+        image_alt: 'Example Admin Product Image Alt',
+    },
+    Admin_Products: {
+        is_for_sale: true,
+        cost_price: 29.99,
+        supplier: 'Admin Supplier Inc.',
+    }
+  };

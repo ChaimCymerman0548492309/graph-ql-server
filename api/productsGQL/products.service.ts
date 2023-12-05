@@ -1,5 +1,5 @@
 import { Product, AdminProduct } from './products.model';
-import { ShopProductInterface, AdminProductInterface, ProductCreateInput, UpdateProductRequest } from './products.interface';
+import { ShopProductInterface, AdminProductInterface, ProductCreateInput, UpdateProductRequest, AddAdminProduct } from './products.interface';
 import { sequelize } from '../../utils/connections.db';
 import { rearg } from 'lodash';
 
@@ -78,18 +78,18 @@ const productService = {
     addNewInventoryItem: async (
         newInventoryItemData: {
             product: ShopProductInterface;
-            Admin_Products: {
+            admin_products: {
                 is_for_sale: boolean;
                 cost_price: number;
                 supplier: string;
             };
         }
-    ): Promise<{ adminProduct: AdminProductInterface; product: ShopProductInterface | null }> => {
+    ): Promise<{ adminProduct: AddAdminProduct; product: ShopProductInterface | null }> => {
         try {
             const createdProduct = await Product.create(newInventoryItemData.product as ProductCreateInput) as unknown as ShopProductInterface;
 
             const createdAdminProduct = await AdminProduct.create({
-                ...newInventoryItemData.Admin_Products,
+                ...newInventoryItemData.admin_products,
                 product_id: createdProduct.product_id,
             });
 
@@ -98,7 +98,7 @@ const productService = {
             });
 
             return {
-                adminProduct: createdAdminProduct.toJSON() as AdminProductInterface,
+                adminProduct: createdAdminProduct.toJSON() as AddAdminProduct,
                 product: retrievedProduct ? (retrievedProduct.toJSON() as ShopProductInterface) : null,
             };
         } catch (error) {

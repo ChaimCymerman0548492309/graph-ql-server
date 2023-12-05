@@ -83,7 +83,7 @@ const productService = {
     addNewInventoryItem: (newInventoryItemData) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const createdProduct = yield products_model_1.Product.create(newInventoryItemData.product);
-            const createdAdminProduct = yield products_model_1.AdminProduct.create(Object.assign(Object.assign({}, newInventoryItemData.Admin_Products), { product_id: createdProduct.product_id }));
+            const createdAdminProduct = yield products_model_1.AdminProduct.create(Object.assign(Object.assign({}, newInventoryItemData.admin_products), { product_id: createdProduct.product_id }));
             const retrievedProduct = yield products_model_1.Product.findOne({
                 where: { product_id: createdProduct.product_id },
             });

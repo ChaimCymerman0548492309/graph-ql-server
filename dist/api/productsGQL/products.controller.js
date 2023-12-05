@@ -56,14 +56,21 @@ const getInventoryById = (productId) => __awaiter(void 0, void 0, void 0, functi
     }
 });
 exports.getInventoryById = getInventoryById;
-const addNewInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const newInventoryItemData = req.body;
+const addNewInventoryItem = (newInventoryItemData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const createdInventoryItem = yield products_service_1.default.addNewInventoryItem(newInventoryItemData);
-        res.status(201).json(createdInventoryItem);
+        return {
+            status: 201,
+            product: createdInventoryItem.product,
+            adminProduct: createdInventoryItem.adminProduct,
+            message: 'Successfully added!'
+        };
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Intrnal service error'
+        };
     }
 });
 exports.addNewInventoryItem = addNewInventoryItem;
@@ -100,3 +107,20 @@ const deleteInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, func
     }
 });
 exports.deleteInventoryItem = deleteInventoryItem;
+const exampleAdminProduct = {
+    product: {
+        name: 'Example Admin Product',
+        sale_price: 39.99,
+        quantity: 50,
+        description: 'This is an example admin product description.',
+        category: 'Office Supplies',
+        discount_percentage: 15,
+        image_url: 'https://example.com/admin-product-image.jpg',
+        image_alt: 'Example Admin Product Image Alt',
+    },
+    Admin_Products: {
+        is_for_sale: true,
+        cost_price: 29.99,
+        supplier: 'Admin Supplier Inc.',
+    }
+};
