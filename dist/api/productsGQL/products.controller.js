@@ -31,19 +31,28 @@ const getAllInventory = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getAllInventory = getAllInventory;
-const getInventoryById = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productId = req.params.productId;
+const getInventoryById = (productId) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const inventoryItem = yield products_service_1.default.getInventoryById(productId);
         if (inventoryItem) {
-            res.status(200).json(inventoryItem);
+            return {
+                status: 200,
+                product: inventoryItem,
+                message: 'Inventory has been successfully'
+            };
         }
         else {
-            res.status(404).json({ message: 'Inventory item not found' });
+            return {
+                status: 404,
+                message: 'Inventory item not found!'
+            };
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Internal Server Error'
+        };
     }
 });
 exports.getInventoryById = getInventoryById;

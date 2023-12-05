@@ -21,11 +21,17 @@ const typeDefs = `#graphql
         products: [Product]
         status: Int
     }
+    type getProductByIdResult {
+        message: String
+        status: Int
+        product: Product
+    }
 
 `;
 const typesQuery = `#graphql
     type Query {
         getProducts: getProductsResult
+        getProductById(id: ID!): getProductByIdResult
     }
 `;
 const productsTypes = typeDefs + typesQuery;

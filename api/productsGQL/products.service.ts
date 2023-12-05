@@ -1,8 +1,9 @@
 import { Product, AdminProduct } from './products.model';
 import { ShopProductInterface, AdminProductInterface, ProductCreateInput, UpdateProductRequest } from './products.interface';
 import { sequelize } from '../../utils/connections.db';
+import { rearg } from 'lodash';
 
-const queryString = `
+const selectAllProducts = `
       SELECT
         "admin_products"."product_id",
         "admin_products"."is_for_sale",
@@ -23,10 +24,37 @@ const queryString = `
       ON
         "admin_products"."product_id" = "product"."product_id";
     `;
+    function getProductByIdQuery(id: string): string {
+        const selectById = `
+          SELECT
+            "admin_products"."product_id",
+            "admin_products"."is_for_sale",
+            "admin_products"."cost_price",
+            "admin_products"."supplier",
+            "product"."name" AS "name",
+            "product"."sale_price" AS "sale_price",
+            "product"."quantity" AS "quantity",
+            "product"."description" AS "description",
+            "product"."category" AS "category",
+            "product"."discount_percentage" AS "discount_percentage",
+            "product"."image_url" AS "image_url",
+            "product"."image_alt" AS "image_alt"
+          FROM
+            "admin_products" AS "admin_products"
+          LEFT OUTER JOIN
+            "products" AS "product"
+          ON
+            "admin_products"."product_id" = "product"."product_id"
+          WHERE 
+            "admin_products"."product_id" = ${id};
+        `;
+        return selectById;
+      }
+      
 const productService = {
     getAllInventory: async () => {
         try {
-            const inventory = await sequelize.query(queryString)
+            const inventory = await sequelize.query(selectAllProducts)
             return inventory[0]
         } catch (error) {
             console.error('Error fetching inventory:', error);
@@ -34,14 +62,16 @@ const productService = {
         }
     },
 
-    getInventoryById: async (productId: string): Promise<AdminProductInterface | null> => {
-        const inventoryItem = await AdminProduct.findOne({
-            where: { product_id: productId },
-            include: [Product],
-            raw: true,
-        });
-
-        return inventoryItem ? (inventoryItem as unknown as AdminProductInterface) : null;
+    getInventoryById: async (productId: string) => {
+        try {
+            const inventoryItem = await sequelize.query(getProductByIdQuery(productId))
+            console.log(inventoryItem[0][0]);
+            
+            return inventoryItem[0][0]
+        } catch (error) {
+            console.error('Error fetching inventory:', error);
+            throw error;
+        }
     },
 
 

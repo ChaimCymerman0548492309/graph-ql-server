@@ -11,6 +11,17 @@ export const productsResolvers = {
         throw error;
       }
     },
+
+    getProductById: async (_:any, {id}: {id: string}) => {
+      try{
+        const result = await productsController.getInventoryById(id);
+        return result
+      } catch (error) {
+        console.error('Error fetching products:', error);
+        throw error;
+      }
+
+    }
   },
 };
 

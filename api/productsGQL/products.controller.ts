@@ -19,19 +19,27 @@ export const getAllInventory = async () => {
     }
 };
 
-export const getInventoryById = async (req: Request, res: Response): Promise<void> => {
-    const productId = req.params.productId;
-
+export const getInventoryById = async (productId: string) => {
     try {
         const inventoryItem = await productService.getInventoryById(productId);
         if (inventoryItem) {
-            res.status(200).json(inventoryItem);
+            return {
+                status: 200,
+                product: inventoryItem,
+                message: 'Inventory has been successfully'
+            }
         } else {
-            res.status(404).json({ message: 'Inventory item not found' });
+            return {
+                status: 404,
+                message: 'Inventory item not found!'
+            }
 
         }
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Internal Server Error'
+        }
     }
 };
 
@@ -49,7 +57,7 @@ export const addNewInventoryItem = async (req: Request, res: Response): Promise<
 
 export const updateInventoryItem = async (req: Request, res: Response): Promise<void> => {
     const productId = req.params.productId;
-    const updatedInventoryItemData = req.body;
+    const updatedInventoryItemData = req.body
     
     try {
         const updatedInventoryItem = await productService.updateInventoryItem(productId, updatedInventoryItemData.amount);

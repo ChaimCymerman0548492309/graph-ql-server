@@ -46,5 +46,15 @@ exports.productsResolvers = {
                 throw error;
             }
         }),
+        getProductById: (_, { id }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const result = yield productsController.getInventoryById(id);
+                return result;
+            }
+            catch (error) {
+                console.error('Error fetching products:', error);
+                throw error;
+            }
+        })
     },
 };
