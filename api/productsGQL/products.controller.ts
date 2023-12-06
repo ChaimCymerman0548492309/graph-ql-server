@@ -1,11 +1,10 @@
-import { Request, Response } from 'express';
 import productService from './products.service';
-import { AdminProductInterface, InputNewProduct } from './products.interface';
+import { AdminProductInterface } from './products.interface';
 
 
 export const getAllInventory = async () => {
     try {
-        const inventory = await productService.getAllInventory();                
+        const inventory = await productService.getAllInventory();
         return {
             status: 200,
             products: inventory
@@ -44,14 +43,13 @@ export const getInventoryById = async (productId: string) => {
     }
 };
 
-export const addNewInventoryItem = async (newInventoryItemData: InputNewProduct) => {
-    
+export const addNewInventoryItem = async (newInventoryItemData: AdminProductInterface) => {
+
     try {
-        const createdInventoryItem = await productService.addNewInventoryItem(newInventoryItemData);        
+        const createdInventoryItem = await productService.addNewInventoryItem(newInventoryItemData);
         return {
             status: 201,
-            product: createdInventoryItem.product,
-            adminProduct: createdInventoryItem.adminProduct,
+            product: createdInventoryItem,
             message: 'Successfully added!'
         }
 
@@ -63,52 +61,49 @@ export const addNewInventoryItem = async (newInventoryItemData: InputNewProduct)
     }
 };
 
-export const updateInventoryItem = async (req: Request, res: Response): Promise<void> => {
-    const productId = req.params.productId;
-    const updatedInventoryItemData = req.body
-    
+export const updateInventoryItem = async (productId: string, product: AdminProductInterface) => {
+
     try {
-        const updatedInventoryItem = await productService.updateInventoryItem(productId, updatedInventoryItemData.amount);
+        const updatedInventoryItem = await productService.updateInventoryItem(productId, product);
         if (updatedInventoryItem) {
-            res.status(200).json(updatedInventoryItem);
+            return {
+                status: 200,
+                message: 'The product was updated successfully'
+            }
         } else {
-            res.status(404).json({ message: 'Inventory item not found' });
+            return {
+                status: 404,
+                message: 'Inventory item not found !'
+            }
         }
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Internal server error'
+        }
     }
 };
 
-export const deleteInventoryItem = async (req: Request, res: Response): Promise<void> => {
-    const productId = req.params.productId;
+export const deleteInventoryItem = async (id: string) => {
 
     try {
-        const deletedInventoryItem = await productService.deleteInventoryItem(productId);
+        const deletedInventoryItem = await productService.deleteInventoryItem(id);
         if (deletedInventoryItem) {
-            res.status(200).json(deletedInventoryItem);
+            return {
+                status: 200,
+                message: deletedInventoryItem.message,
+                success: deletedInventoryItem.success
+            }
         } else {
-            res.status(404).json({ message: 'Inventory item not found' });
-
+            return {
+                status: 404,
+                message: 'Inventory item not found'
+            }
         }
     } catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 404,
+            message: 'Internal server error'
+        }
     }
 };
-
-const exampleAdminProduct = {
-    product : {
-        name: 'Example Admin Product',
-        sale_price: 39.99,
-        quantity: 50,
-        description: 'This is an example admin product description.',
-        category: 'Office Supplies',
-        discount_percentage: 15,
-        image_url: 'https://example.com/admin-product-image.jpg',
-        image_alt: 'Example Admin Product Image Alt',
-    },
-    Admin_Products: {
-        is_for_sale: true,
-        cost_price: 29.99,
-        supplier: 'Admin Supplier Inc.',
-    }
-  };

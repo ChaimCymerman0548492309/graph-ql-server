@@ -49,6 +49,7 @@ exports.productsResolvers = {
         getProductById: (_, { id }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const result = yield productsController.getInventoryById(id);
+                console.log(result);
                 return result;
             }
             catch (error) {
@@ -61,7 +62,24 @@ exports.productsResolvers = {
         addProduct: (_, { product }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const result = yield productsController.addNewInventoryItem(product);
-                console.log(result);
+                return result;
+            }
+            catch (error) {
+                throw error;
+            }
+        }),
+        updateProduct: (_, { id, product }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const result = yield productsController.updateInventoryItem(id, product);
+                return result;
+            }
+            catch (error) {
+                throw error;
+            }
+        }),
+        deleteProduct: (_, { id }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const result = yield productsController.deleteInventoryItem(id);
                 return result;
             }
             catch (error) {

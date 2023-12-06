@@ -1,5 +1,5 @@
 import * as productsController from "../productsGQL/products.controller";
-import { InputNewProduct } from "./products.interface";
+import { AdminProductInterface } from "./products.interface";
 
 export const productsResolvers = {
   Query: {
@@ -13,9 +13,11 @@ export const productsResolvers = {
       }
     },
 
-    getProductById: async (_:any, {id}: {id: string}) => {
-      try{
+    getProductById: async (_: any, { id }: { id: string }) => {
+      try {
         const result = await productsController.getInventoryById(id);
+        console.log(result);
+        
         return result
       } catch (error) {
         console.error('Error fetching products:', error);
@@ -24,17 +26,40 @@ export const productsResolvers = {
 
     }
   },
-  Mutation : {
-    addProduct: async (_:any, {product}: {product:InputNewProduct}) => {
+  Mutation: {
+
+    addProduct: async (_: any, { product }: { product: AdminProductInterface }) => {
       try {
+
         const result = await productsController.addNewInventoryItem(product);
-        console.log(result);
+
         return result
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    updateProduct: async (_: any, { id, product }: { id: string, product: AdminProductInterface }) => {
+      try {
+
+      const result = await productsController.updateInventoryItem(id, product);
+
+        return result
+      } catch (error) {
+        throw error;
+      }
+    },
+
+    deleteProduct: async (_: any, {id}: {id: string}) => {
+      try {
+        const result = await productsController.deleteInventoryItem(id);
+
+        return result;
       } catch (error) {
         throw error;
       }
     }
   }
-};
+}
 
 

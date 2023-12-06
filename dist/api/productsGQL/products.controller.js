@@ -61,8 +61,7 @@ const addNewInventoryItem = (newInventoryItemData) => __awaiter(void 0, void 0, 
         const createdInventoryItem = yield products_service_1.default.addNewInventoryItem(newInventoryItemData);
         return {
             status: 201,
-            product: createdInventoryItem.product,
-            adminProduct: createdInventoryItem.adminProduct,
+            product: createdInventoryItem,
             message: 'Successfully added!'
         };
     }
@@ -74,53 +73,52 @@ const addNewInventoryItem = (newInventoryItemData) => __awaiter(void 0, void 0, 
     }
 });
 exports.addNewInventoryItem = addNewInventoryItem;
-const updateInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productId = req.params.productId;
-    const updatedInventoryItemData = req.body;
+const updateInventoryItem = (productId, product) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const updatedInventoryItem = yield products_service_1.default.updateInventoryItem(productId, updatedInventoryItemData.amount);
+        const updatedInventoryItem = yield products_service_1.default.updateInventoryItem(productId, product);
         if (updatedInventoryItem) {
-            res.status(200).json(updatedInventoryItem);
+            return {
+                status: 200,
+                message: 'The product was updated successfully'
+            };
         }
         else {
-            res.status(404).json({ message: 'Inventory item not found' });
+            return {
+                status: 404,
+                message: 'Inventory item not found !'
+            };
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 500,
+            message: 'Internal server error'
+        };
     }
 });
 exports.updateInventoryItem = updateInventoryItem;
-const deleteInventoryItem = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const productId = req.params.productId;
+const deleteInventoryItem = (id) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const deletedInventoryItem = yield products_service_1.default.deleteInventoryItem(productId);
+        const deletedInventoryItem = yield products_service_1.default.deleteInventoryItem(id);
         if (deletedInventoryItem) {
-            res.status(200).json(deletedInventoryItem);
+            return {
+                status: 200,
+                message: deletedInventoryItem.message,
+                success: deletedInventoryItem.success
+            };
         }
         else {
-            res.status(404).json({ message: 'Inventory item not found' });
+            return {
+                status: 404,
+                message: 'Inventory item not found'
+            };
         }
     }
     catch (error) {
-        res.status(500).json({ message: 'Internal server error' });
+        return {
+            status: 404,
+            message: 'Internal server error'
+        };
     }
 });
 exports.deleteInventoryItem = deleteInventoryItem;
-const exampleAdminProduct = {
-    product: {
-        name: 'Example Admin Product',
-        sale_price: 39.99,
-        quantity: 50,
-        description: 'This is an example admin product description.',
-        category: 'Office Supplies',
-        discount_percentage: 15,
-        image_url: 'https://example.com/admin-product-image.jpg',
-        image_alt: 'Example Admin Product Image Alt',
-    },
-    Admin_Products: {
-        is_for_sale: true,
-        cost_price: 29.99,
-        supplier: 'Admin Supplier Inc.',
-    }
-};

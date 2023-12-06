@@ -30,7 +30,6 @@ exports.app = (0, express_1.default)();
 exports.app.use((0, cors_1.default)({ origin: '*' }));
 exports.app.use((0, morgan_1.default)('dev'));
 exports.app.use(express_1.default.json({ limit: '50mb' }));
-// app.use('/products', productRouter);
 (() => __awaiter(void 0, void 0, void 0, function* () {
     const server = new server_1.ApolloServer({
         typeDefs: usersTypes_1.default + productsTypes_1.default,

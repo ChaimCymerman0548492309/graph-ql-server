@@ -8,7 +8,7 @@ const productService = {
   },
 
   getProductById: async (id: string): Promise<ShopProductInterface | null> => {
-    const product = await Product.findOne({ where: { product_id: id } }); 
+    const product = await Product.findOne({ where: { product_id: id } });
     return product ? (product.toJSON() as ShopProductInterface) : null;
   },
 
@@ -17,12 +17,12 @@ const productService = {
       { quantity: Sequelize.literal(`quantity - ${amount}`) },
       { where: { product_id: id } }
     );
-    
+
     if (result[0] === 0) {
-      return "Product not found!";
-    }    
+      return "Product not found !";
+    }
     return result[0];
-},
+  },
 };
 
 export default productService;

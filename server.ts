@@ -25,8 +25,6 @@ app.use(morgan('dev'));
 app.use(express.json({ limit: '50mb' }));
 
 
-// app.use('/products', productRouter);
-
 (async () => {
     const server = new ApolloServer({
         typeDefs: usersTypes + productsTypes,

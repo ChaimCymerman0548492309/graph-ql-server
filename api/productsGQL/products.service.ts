@@ -1,56 +1,7 @@
-import { Product, AdminProduct } from './products.model';
-import { ShopProductInterface, AdminProductInterface, ProductCreateInput, UpdateProductRequest, AddAdminProduct } from './products.interface';
+import { AdminProductInterface} from './products.interface';
 import { sequelize } from '../../utils/connections.db';
-import { rearg } from 'lodash';
+import { deleteProductQuery, insertProductQuery, selectAllProducts, selectProductByIdQuery, updateProductQuery } from './queriesDB';
 
-const selectAllProducts = `
-      SELECT
-        "admin_products"."product_id",
-        "admin_products"."is_for_sale",
-        "admin_products"."cost_price",
-        "admin_products"."supplier",
-        "product"."name" AS "name",
-        "product"."sale_price" AS "sale_price",
-        "product"."quantity" AS "quantity",
-        "product"."description" AS "description",
-        "product"."category" AS "category",
-        "product"."discount_percentage" AS "discount_percentage",
-        "product"."image_url" AS "image_url",
-        "product"."image_alt" AS "image_alt"
-      FROM
-        "admin_products" AS "admin_products"
-      LEFT OUTER JOIN
-        "products" AS "product"
-      ON
-        "admin_products"."product_id" = "product"."product_id";
-    `;
-    function getProductByIdQuery(id: string): string {
-        const selectById = `
-          SELECT
-            "admin_products"."product_id",
-            "admin_products"."is_for_sale",
-            "admin_products"."cost_price",
-            "admin_products"."supplier",
-            "product"."name" AS "name",
-            "product"."sale_price" AS "sale_price",
-            "product"."quantity" AS "quantity",
-            "product"."description" AS "description",
-            "product"."category" AS "category",
-            "product"."discount_percentage" AS "discount_percentage",
-            "product"."image_url" AS "image_url",
-            "product"."image_alt" AS "image_alt"
-          FROM
-            "admin_products" AS "admin_products"
-          LEFT OUTER JOIN
-            "products" AS "product"
-          ON
-            "admin_products"."product_id" = "product"."product_id"
-          WHERE 
-            "admin_products"."product_id" = ${id};
-        `;
-        return selectById;
-      }
-      
 const productService = {
     getAllInventory: async () => {
         try {
@@ -64,9 +15,9 @@ const productService = {
 
     getInventoryById: async (productId: string) => {
         try {
-            const inventoryItem = await sequelize.query(getProductByIdQuery(productId))
+            const inventoryItem = await sequelize.query(selectProductByIdQuery(productId))
             console.log(inventoryItem[0][0]);
-            
+
             return inventoryItem[0][0]
         } catch (error) {
             console.error('Error fetching inventory:', error);
@@ -75,32 +26,11 @@ const productService = {
     },
 
 
-    addNewInventoryItem: async (
-        newInventoryItemData: {
-            product: ShopProductInterface;
-            admin_products: {
-                is_for_sale: boolean;
-                cost_price: number;
-                supplier: string;
-            };
-        }
-    ): Promise<{ adminProduct: AddAdminProduct; product: ShopProductInterface | null }> => {
+    addNewInventoryItem: async (newInventoryItemData: AdminProductInterface) => {
         try {
-            const createdProduct = await Product.create(newInventoryItemData.product as ProductCreateInput) as unknown as ShopProductInterface;
+            const createdProduct = await sequelize.query(insertProductQuery(newInventoryItemData))
+            return createdProduct[0][0]
 
-            const createdAdminProduct = await AdminProduct.create({
-                ...newInventoryItemData.admin_products,
-                product_id: createdProduct.product_id,
-            });
-
-            const retrievedProduct = await Product.findOne({
-                where: { product_id: createdProduct.product_id },
-            });
-
-            return {
-                adminProduct: createdAdminProduct.toJSON() as AddAdminProduct,
-                product: retrievedProduct ? (retrievedProduct.toJSON() as ShopProductInterface) : null,
-            };
         } catch (error) {
             console.error('Error creating new inventory item:', error);
             throw new Error('Error creating new inventory item');
@@ -108,53 +38,27 @@ const productService = {
     },
 
 
-    updateInventoryItem: async (
-        productId: string,
-        updatedInventoryItemData: Partial<AdminProductInterface>
-    ): Promise<AdminProductInterface | null> => {
+    updateInventoryItem: async (productId: string, product: AdminProductInterface) => {
 
-        const inventoryItem = await AdminProduct.findOne({
-            where: { product_id: productId },
-            include: [Product],
-        });
+        try {
+            const inventoryItem = await sequelize.query(updateProductQuery(productId, product))
 
-        if (!inventoryItem) {
-            return null;
+            return inventoryItem[0][0]
+        } catch (err) {
+            throw new Error(err + ": Error updating inventory item")
         }
 
-        await inventoryItem.update(updatedInventoryItemData);
-        console.log("Update in AdminProduct successful");
-
-        const associatedProduct = await (inventoryItem as any).getProduct();
-
-        console.log("Associated Product:", associatedProduct);
-
-        if (associatedProduct) {
-            await associatedProduct.update(updatedInventoryItemData as ProductCreateInput);
-            console.log("Update in Product successful");
-        } else {
-            console.log("Associated Product not found");
-        }
-
-        return inventoryItem.toJSON() as AdminProductInterface;
     },
-
-
-
-
-
 
     deleteInventoryItem: async (productId: string): Promise<{ success: boolean, message?: string }> => {
         try {
-            const inventoryItem = await AdminProduct.findOne({ where: { product_id: productId } });
+            const inventoryItem = await sequelize.query(deleteProductQuery(productId))
 
-            if (!inventoryItem) {
-                return { success: false, message: 'Inventory item not found.' };
+            if (inventoryItem) {
+                return { success: true, message: 'Inventory item deleted successfully !' };
             }
 
-            await inventoryItem.destroy();
-
-            return { success: true, message: 'Inventory item deleted successfully.' };
+            return { success: false, message: 'Error while deleting inventory item !' };
         } catch (error) {
             console.error('Error deleting inventory item:', error);
             throw new Error('Error deleting inventory item');

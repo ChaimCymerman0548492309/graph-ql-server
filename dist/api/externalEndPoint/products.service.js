@@ -23,7 +23,7 @@ const productService = {
     updateProductQuantity: (id, amount) => __awaiter(void 0, void 0, void 0, function* () {
         const result = yield products_model_1.Product.update({ quantity: sequelize_1.Sequelize.literal(`quantity - ${amount}`) }, { where: { product_id: id } });
         if (result[0] === 0) {
-            return "Product not found!";
+            return "Product not found !";
         }
         return result[0];
     }),
