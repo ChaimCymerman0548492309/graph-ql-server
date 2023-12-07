@@ -16,7 +16,6 @@ export const productsResolvers = {
     getProductById: async (_: any, { id }: { id: string }) => {
       try {
         const result = await productsController.getInventoryById(id);
-        console.log(result);
         
         return result
       } catch (error) {

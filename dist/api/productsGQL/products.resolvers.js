@@ -49,7 +49,6 @@ exports.productsResolvers = {
         getProductById: (_, { id }) => __awaiter(void 0, void 0, void 0, function* () {
             try {
                 const result = yield productsController.getInventoryById(id);
-                console.log(result);
                 return result;
             }
             catch (error) {
