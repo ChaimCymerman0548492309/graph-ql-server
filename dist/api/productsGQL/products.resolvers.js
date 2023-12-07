@@ -38,23 +38,23 @@ exports.productsResolvers = {
     Query: {
         getProducts: () => __awaiter(void 0, void 0, void 0, function* () {
             try {
-                // Fetch products from the database or any data source
-                const products = yield productsController.getAllInventory();
-                // Return the result with the appropriate fields
-                return {
-                    message: 'Products fetched successfully',
-                    products,
-                    status: 200,
-                };
+                const result = yield productsController.getAllInventory();
+                return result;
             }
             catch (error) {
                 console.error('Error fetching products:', error);
-                return {
-                    message: 'Internal Server Error',
-                    products: null,
-                    status: 500,
-                };
+                throw error;
             }
         }),
-    }
+        getProductById: (_, { id }) => __awaiter(void 0, void 0, void 0, function* () {
+            try {
+                const result = yield productsController.getInventoryById(id);
+                return result;
+            }
+            catch (error) {
+                console.error('Error fetching products:', error);
+                throw error;
+            }
+        })
+    },
 };
