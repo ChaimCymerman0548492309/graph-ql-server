@@ -42,6 +42,7 @@ function selectProductByIdQuery(id) {
 }
 exports.selectProductByIdQuery = selectProductByIdQuery;
 function insertProductQuery(product) {
+    console.log(product);
     const insertProduct = `
       INSERT INTO "inventory_products" (
         "is_for_sale",
@@ -74,6 +75,7 @@ function insertProductQuery(product) {
 exports.insertProductQuery = insertProductQuery;
 function updateProductQuery(id, product) {
     const updateFields = [];
+    console.log(product);
     if (product.is_for_sale !== undefined)
         updateFields.push(`"is_for_sale" = ${product.is_for_sale}`);
     if (product.cost_price !== undefined)

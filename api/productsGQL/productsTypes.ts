@@ -30,7 +30,7 @@ const typeDefs = `#graphql
     }
 
     type UpdateOrDeleteProduct {
-        status: String!
+        status: Int!
         message: String!
         success: String
     }
@@ -92,7 +92,7 @@ const typesQuery = `#graphql
     }
 
     type Mutation {
-        addProduct(product: AddProduct): AddProductResult
+        addProduct(product: UpdateProduct): AddProductResult
         updateProduct(id:ID, product: UpdateProduct): UpdateOrDeleteProduct
         deleteProduct(id: ID): UpdateOrDeleteProduct
     }
